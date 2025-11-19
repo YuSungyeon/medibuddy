@@ -18,6 +18,11 @@ function App() {
   const locale = getLocaleForCountry(selectedCountry);
   const translations = getTranslations(locale);
 
+  // 페이지 타이틀을 선택된 언어에 따라 동적으로 업데이트
+  useEffect(() => {
+    document.title = translations.common.appName || "MediBuddy";
+  }, [translations]);
+
   // URL 파라미터에서 토큰 및 캘린더 정보 추출 및 저장
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
