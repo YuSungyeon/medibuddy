@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import Chat from "./components/Chat";
 import Insurance from "./components/Insurance";
 import Calendar from "./components/Calendar";
+import { getLocaleForCountry, getTranslations } from "./data/translations";
 import "./App.css";
 
 function App() {
@@ -14,6 +15,8 @@ function App() {
   const [selectedCountry, setSelectedCountry] = useState("");
   // 로그인 상태
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const locale = getLocaleForCountry(selectedCountry);
+  const translations = getTranslations(locale);
 
   // URL 파라미터에서 토큰 및 캘린더 정보 추출 및 저장
   useEffect(() => {
@@ -92,6 +95,7 @@ function App() {
         sidebarOpen={sidebarOpen}
         selectedCountry={selectedCountry}
         setSelectedCountry={setSelectedCountry}
+        translations={translations}
       />
       <div className="main-layout">
         <div className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
@@ -100,13 +104,13 @@ function App() {
               className={`sidebar-link ${activeTab === "Chat" ? "active" : ""}`}
               onClick={() => setActiveTab("Chat")}
             >
-              Chat
+              {translations.sidebar.chat}
             </button>
             <button 
               className={`sidebar-link ${activeTab === "Insurance" ? "active" : ""}`}
               onClick={() => setActiveTab("Insurance")}
             >
-              Insurance
+              {translations.sidebar.insurance}
             </button>
             <button 
               className={`sidebar-link ${activeTab === "Calendar" ? "active" : ""} ${!isLoggedIn ? "disabled" : ""}`}
@@ -114,7 +118,7 @@ function App() {
                 if (isLoggedIn) {
                   setActiveTab("Calendar");
                 } else {
-                  alert("로그인이 필요합니다. 먼저 로그인해주세요.");
+                  alert(translations.alerts.loginRequired);
                 }
               }}
               disabled={!isLoggedIn}
@@ -123,14 +127,14 @@ function App() {
                 cursor: !isLoggedIn ? "not-allowed" : "pointer"
               }}
             >
-              Calendar {!isLoggedIn }
+              {translations.sidebar.calendar}
             </button>
           </nav>
         </div>
         <div className={`main-content-area ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-          {activeTab === "Chat" && <Chat selectedCountry={selectedCountry} />}
-          {activeTab === "Insurance" && <Insurance />}
-          {activeTab === "Calendar" && <Calendar />}
+          {activeTab === "Chat" && <Chat selectedCountry={selectedCountry} translations={translations} />}
+          {activeTab === "Insurance" && <Insurance translations={translations} />}
+          {activeTab === "Calendar" && <Calendar translations={translations} />}
         </div>
       </div>
     </div>

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { formatMessage } from "../data/translations";
 
-const HospitalList = ({ hospitals }) => {
+const HospitalList = ({ hospitals, translations }) => {
   const [selectedHospital, setSelectedHospital] = useState(null);
+  const hospitalText = translations?.hospitalList || {};
   
   // 선택된 병원이 있으면 해당 병원만, 없으면 모든 병원의 지도 URL 생성
   const getMapUrl = () => {
@@ -32,7 +34,10 @@ const HospitalList = ({ hospitals }) => {
           fontSize: '20px',
           margin: 10
         }}>
-          총 {hospitals.hospitals ? hospitals.hospitals.length : hospitals.length}개의 병원을 찾았습니다.
+          {formatMessage(
+            hospitalText.totalFound || "총 {{count}}개의 병원을 찾았습니다.",
+            { count: hospitals.hospitals ? hospitals.hospitals.length : hospitals.length }
+          )}
         </p>
       </div>
 
@@ -57,7 +62,7 @@ const HospitalList = ({ hospitals }) => {
             margin: '0 0 20px 0',
             textAlign: 'center'
           }}>
-            병원 목록
+            {hospitalText.listTitle || "병원 목록"}
           </h3>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -108,7 +113,7 @@ const HospitalList = ({ hospitals }) => {
                   alignItems: 'center',
                   gap: '6px'
                 }}>
-                  Tel: {hospital.p_number}
+                  {(hospitalText.phoneLabel || "Tel")}: {hospital.p_number}
                 </div>
               </div>
             ))}
@@ -133,7 +138,7 @@ const HospitalList = ({ hospitals }) => {
             margin: '0 0 20px 0',
             textAlign: 'center'
           }}>
-            지도
+            {hospitalText.mapTitle || "지도"}
           </h3>
           
           {/* 실제 지도 표시 */}
@@ -177,8 +182,11 @@ const HospitalList = ({ hospitals }) => {
                   <div style={{ fontSize: '48px', marginBottom: '16px' }}>🗺️</div>
                   <div style={{ fontSize: '16px' }}>
                     {selectedHospital 
-                      ? `${selectedHospital.name_korean} 위치` 
-                      : '병원을 선택하면 지도가 표시됩니다'
+                      ? formatMessage(
+                          hospitalText.mapSelectedPlaceholder || "{{name}} 위치",
+                          { name: selectedHospital.name_korean }
+                        )
+                      : hospitalText.mapPlaceholder || '병원을 선택하면 지도가 표시됩니다'
                     }
                   </div>
                 </div>
@@ -202,8 +210,11 @@ const HospitalList = ({ hospitals }) => {
                 <div style={{ fontSize: '48px', marginBottom: '16px' }}>🗺️</div>
                 <div style={{ fontSize: '16px' }}>
                   {selectedHospital 
-                    ? `${selectedHospital.name_korean} 위치` 
-                    : '병원을 선택하면 지도가 표시됩니다'
+                    ? formatMessage(
+                        hospitalText.mapSelectedPlaceholder || "{{name}} 위치",
+                        { name: selectedHospital.name_korean }
+                      )
+                    : hospitalText.mapPlaceholder || '병원을 선택하면 지도가 표시됩니다'
                   }
                 </div>
               </div>
@@ -225,7 +236,7 @@ const HospitalList = ({ hospitals }) => {
                 fontWeight: 'bold',
                 margin: '0 0 12px 0'
               }}>
-                상세 정보
+                {hospitalText.detailTitle || "상세 정보"}
               </h4>
               
               <div style={{
@@ -233,14 +244,14 @@ const HospitalList = ({ hospitals }) => {
                 fontSize: '14px',
                 marginBottom: '8px'
               }}>
-                <strong>지원 언어:</strong> {selectedHospital.language}
+                <strong>{hospitalText.supportedLanguages || "지원 언어"}:</strong> {selectedHospital.language}
               </div>
               
               <div style={{
                 color: 'rgba(255, 255, 255, 0.8)',
                 fontSize: '14px'
               }}>
-                <strong>진료과목:</strong> {selectedHospital.specialty_korean}
+                <strong>{hospitalText.specialties || "진료과목"}:</strong> {selectedHospital.specialty_korean}
               </div>
             </div>
           )}

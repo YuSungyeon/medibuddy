@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { getCalendarEvents } from "../api/calendarApi";
+import { formatMessage } from "../data/translations";
 
-const Calendar = () => {
+const Calendar = ({ translations }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(2025);
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const monthNames = [
-    "1월", "2월", "3월", "4월", "5월", "6월",
-    "7월", "8월", "9월", "10월", "11월", "12월"
+  const calendarText = translations?.calendar || {};
+  const monthNames = calendarText.monthNames || [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
   ];
-
-  const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+  const dayNames = calendarText.dayNames || ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   // 이벤트 로드 함수
   const loadEvents = async () => {
@@ -202,7 +202,10 @@ const Calendar = () => {
           alignItems: 'center',
           gap: '10px'
         }}>
-          {currentYear}년 {monthNames[currentMonth]}
+          {formatMessage(calendarText.monthTitle || "{{year}} {{month}}", {
+            year: currentYear,
+            month: monthNames[currentMonth] || ""
+          })}
           {isLoading && (
             <div style={{
               width: '16px',

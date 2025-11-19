@@ -1,7 +1,8 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart, defs, linearGradient, stop } from 'recharts';
+import { formatMessage } from '../data/translations';
 
-const VisitorChart = () => {
+const VisitorChart = ({ translations }) => {
   const data = [
     {
       year: '2022',
@@ -20,8 +21,11 @@ const VisitorChart = () => {
     }
   ];
 
+  const chartText = translations?.visitorChart || {};
+
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
+      const value = payload[0].value;
       return (
         <div style={{
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -38,7 +42,7 @@ const VisitorChart = () => {
             color: '#1a202c',
             fontSize: '18px'
           }}>
-            {label}년
+            {formatMessage(chartText.tooltipTitle || "{{year}}", { year: label })}
           </p>
           <p style={{ 
             margin: 0, 
@@ -46,7 +50,10 @@ const VisitorChart = () => {
             fontSize: '20px',
             fontWeight: '700'
           }}>
-            방문객: {payload[0].value.toLocaleString()}만 명
+            {formatMessage(
+              chartText.tooltipValue || "Visitors: {{value}} million",
+              { value: value.toLocaleString() }
+            )}
           </p>
         </div>
       );

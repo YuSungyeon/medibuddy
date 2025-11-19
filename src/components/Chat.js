@@ -8,8 +8,9 @@ import { addCalendarEvent } from "../api/calendarApi";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Chat = ({ selectedCountry }) => {
+const Chat = ({ selectedCountry, translations }) => {
   const [message, setMessage] = useState("");
+  const chatText = translations?.chat || {};
   const [isLoading, setIsLoading] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
   const [hospitalResults, setHospitalResults] = useState([]);
@@ -350,8 +351,12 @@ const Chat = ({ selectedCountry }) => {
             lineHeight: "1.4",
             maxWidth: "600px"
           }}>
-            병원 선택부터 보험 안내까지,<br/>
-            언어 장벽 없이 안전하고 정확한 올인원 건강 가이드
+            {(chatText.heroSubtitle || []).map((line, index) => (
+              <React.Fragment key={`hero-subtitle-${index}`}>
+                {line}
+                {index !== (chatText.heroSubtitle?.length || 0) - 1 && <br />}
+              </React.Fragment>
+            ))}
           </p>
           
           {/* 십자가 이미지 */}
@@ -433,9 +438,9 @@ const Chat = ({ selectedCountry }) => {
           borderRadius: '16px'
         }}>
           <h3 ref={chartTitleRef} style={{ textAlign: 'center', color: 'white', marginBottom: '50px', fontSize: '24px', fontWeight: '600', fontFamily: 'Pretendard, sans-serif' }}>
-            외국인 방문객 수 추이
+            {chatText.chartTitle || "외국인 방문객 수 추이"}
           </h3>
-          <VisitorChart />
+          <VisitorChart translations={translations} />
         </div>
       </div>
       
@@ -461,7 +466,7 @@ const Chat = ({ selectedCountry }) => {
             marginBottom: '30px',
             letterSpacing: '2px'
           }}>
-            About
+            {chatText.aboutLabel || "About"}
           </div>
           
           {/* 헤드라인 */}
@@ -473,8 +478,12 @@ const Chat = ({ selectedCountry }) => {
             marginBottom: '30px',
             fontFamily: 'Pretendard, sans-serif'
           }}>
-            꾸준히 늘어나는 외국인 방문객,<br/>
-            언어 장벽을 넘어선 의료정보 혁신이 필요합니다.
+            {(chatText.aboutHeadline || []).map((line, index) => (
+              <React.Fragment key={`about-headline-${index}`}>
+                {line}
+                {index !== (chatText.aboutHeadline?.length || 0) - 1 && <br />}
+              </React.Fragment>
+            ))}
           </h2>
           
           {/* 설명 텍스트 */}
@@ -485,10 +494,12 @@ const Chat = ({ selectedCountry }) => {
             maxWidth: '600px',
             margin: '0 auto'
           }}>
-            외국인 방문객 수는 매년 증가하고 있습니다.<br/>
-            하지만 의료 정보 접근은 여전히 제한적입니다.<br/>
-            우리는 언어 장벽 없는 편리한 의료정보 시스템을 통해<br/>
-            외국인의 건강한 삶을 지원합니다.
+            {(chatText.aboutBody || []).map((line, index) => (
+              <React.Fragment key={`about-body-${index}`}>
+                {line}
+                {index !== (chatText.aboutBody?.length || 0) - 1 && <br />}
+              </React.Fragment>
+            ))}
           </p>
         </div>
       </div>
@@ -510,7 +521,43 @@ const Chat = ({ selectedCountry }) => {
           padding: '0 40px'
         }}>
           {/* 외국인 방문객수 카드 */}
-          <div ref={card1Ref} style={{
+          { (chatText.statsCards || []).map((card, idx) => {
+            const cardRefs = [card1Ref, card2Ref, card3Ref];
+            const ref = cardRefs[idx] || card1Ref;
+            return (
+              <div
+                key={`stats-card-${card.title}-${idx}`}
+                ref={ref}
+                style={{
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: '16px',
+                  padding: '30px',
+                  textAlign: 'center',
+                  border: '1px solid #333'
+                }}
+              >
+                <h4 style={{
+                  color: '#888',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  marginBottom: '20px',
+                  lineHeight: '1.4'
+                }}>
+                  {card.title}
+                </h4>
+                <div style={{
+                  color: 'white',
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  lineHeight: '1.2'
+                }}>
+                  {card.value}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
             backgroundColor: '#1a1a1a',
             borderRadius: '16px',
             padding: '30px',
@@ -631,7 +678,7 @@ const Chat = ({ selectedCountry }) => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Please enter your symptoms..."
+                placeholder={chatText.formPlaceholder || "Please enter your symptoms..."}
                 style={{
                   width: "100%",
                   minHeight: "40px",
@@ -722,7 +769,7 @@ const Chat = ({ selectedCountry }) => {
           backgroundColor: 'black',
           padding: '60px 0'
         }}>
-          <HospitalList hospitals={hospitalResults} />
+          <HospitalList hospitals={hospitalResults} translations={translations} />
         </div>
       )}
     </div>

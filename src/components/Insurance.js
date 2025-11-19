@@ -70,10 +70,11 @@ const AirplaneIcon = ({ className }) => (
 );
 
 // Detail Overlay Component
-const DetailOverlay = ({ data, onClose }) => {
+const DetailOverlay = ({ data, onClose, translations }) => {
   const overlayRef = useRef(null);
   const titleRef = useRef(null);
   const sectionsRef = useRef([]);
+  const insuranceText = translations?.insurance || {};
 
   // 모달이 열렸을 때 배경 스크롤 방지
   useEffect(() => {
@@ -150,7 +151,7 @@ const DetailOverlay = ({ data, onClose }) => {
         ) : (
           <div ref={titleRef} className="detail-section">
             <h2 className="detail-title">{data.title}</h2>
-            <p>상세 정보가 없습니다.</p>
+            <p>{insuranceText.noDetails || "상세 정보가 없습니다."}</p>
           </div>
         )}
       </div>
@@ -159,7 +160,14 @@ const DetailOverlay = ({ data, onClose }) => {
 };
 
 // Main Insurance Component
-const Insurance = () => {
+const cardIconMap = {
+  nhi: <PlusIcon className="icon" />,
+  private: <ShieldIcon className="icon" />,
+  student: <UmbrellaIcon className="icon" />,
+  travel: <AirplaneIcon className="icon" />
+};
+
+const Insurance = ({ translations }) => {
   const [selectedInsurance, setSelectedInsurance] = useState(null);
   
   // GSAP 애니메이션을 위한 refs
@@ -170,187 +178,14 @@ const Insurance = () => {
   const card3Ref = useRef(null);
   const card4Ref = useRef(null);
 
-  const insurances = [
-    {
-      theme: "nhi",
-      icon: <PlusIcon className="icon" />,
-      title: "National Health Insurance (NHI)",
-      sections: [
-        {
-          heading: "Eligibility",
-          text: "Foreigners staying in Korea for more than 6 months",
-        },
-        {
-          heading: "Enrollment",
-          text: "Students are automatically enrolled (mandatory)",
-        },
-        {
-          heading: "Benefits",
-          text: "Same as Koreans: 30% out-of-pocket cost",
-        },
-      ],
-      details: {
-        title: "National Health Insurance (NHI)",
-        content: [
-          {
-            heading: "Eligibility",
-            points: [
-              "All foreigners residing in Korea for more than 6 consecutive months with a Foreign Registration Card.",
-              "Includes international students (D-2/D-4), foreign workers (E visas), and marriage migrants (F-6).",
-            ],
-          },
-          {
-            heading: "How to Join",
-            points: [
-              "International students → Automatically enrolled as regional subscribers (mandatory since July 2019).",
-              "Employees → Enrolled as workplace subscribers; employers pay part of the premium.",
-              "Others (self-employed, freelancers, unemployed) → Must apply directly to NHIS after 6 months of residence.",
-              "Average premium: about 120,000 KRW per month. Students receive a 50% government subsidy (since 2023).",
-            ],
-          },
-          {
-            heading: "Benefits",
-            points: [
-              "Same benefits as Korean citizens.",
-              "Patients pay only about 30% of medical costs (outpatient, hospitalization, prescriptions).",
-            ],
-          },
-        ],
-      },
-    },
-    {
-      theme: "private",
-      icon: <ShieldIcon className="icon" />,
-      title: "Private Indemnity Insurance",
-      sections: [
-        { heading: "Enrollment", text: "Foreigners with valid NHI" },
-        {
-          heading: "Enrollment",
-          text: "Enroll individually through an insurer",
-        },
-        {
-          heading: "Benefits",
-          text: "Reimburses 70-80% of out-of-pocket cost",
-        },
-      ],
-      details: {
-        title: "Private Indemnity Health Insurance",
-        content: [
-          {
-            heading: "Eligibility",
-            points: [
-              "Foreigners with valid NHI coverage and legal residence in Korea.",
-              "Most products (cancer, accident, general health) are available.",
-              "Not available for short-term visa holders (e.g., tourist visas, working holiday).",
-            ],
-          },
-          {
-            heading: "How to Join",
-            points: [
-              "Purchase individually through major Korean insurers (e.g., Samsung Fire & Marine, DB Insurance).",
-              "Premiums depend on age and coverage; paid monthly.",
-              "Since 2024, proof of NHI payment is often required when applying.",
-            ],
-          },
-          {
-            heading: "Benefits",
-            points: [
-              "Reimburses 70–80% of out-of-pocket medical expenses left after NHI coverage.",
-              "Covers hospitalization, surgeries, outpatient treatment, etc.",
-              "Provides financial protection against high-cost treatments.",
-            ],
-          },
-        ],
-      },
-    },
-    {
-      theme: "student",
-      icon: <UmbrellaIcon className="icon" />,
-      title: "International Student Insurance",
-      sections: [
-        {
-          heading: "Enrollment",
-          text: "Foreign students studying abroad in Korea",
-        },
-        {
-          heading: "Enrollment",
-          text: "Through university: 6-month or 1-year plan",
-        },
-        {
-          heading: "Benefits",
-          text: "Covers 90% of inpatient cost and some outpatient visits",
-        },
-      ],
-      details: {
-        title: "International Student Health Insurance",
-        content: [
-          {
-            heading: "Eligibility",
-            points: [
-              "Degree-seeking students (D-2) → automatically covered under NHI.",
-              "Language students (D-4-1) → must enroll in private student insurance for the first 6 months.",
-              "Exchange/short-term students → must join school-designated insurance (required for visa maintenance).",
-            ],
-          },
-          {
-            heading: "How to Join",
-            points: [
-              "Organized through universities or institutions (6-month or 1-year contracts).",
-              "Premiums: about 60,000–70,000 KRW for 6 months, 110,000–130,000 KRW for 12 months.",
-              "Enrollment usually tied to school registration.",
-            ],
-          },
-          {
-            heading: "Benefits",
-            points: [
-              "Covers medical expenses during study in Korea.",
-              "Inpatient: 90% of costs reimbursed (limit: about 10 million KRW).",
-              "Outpatient: reimbursed up to 250,000 KRW per visit.",
-            ],
-          },
-        ],
-      },
-    },
-    {
-      theme: "travel",
-      icon: <AirplaneIcon className="icon" />,
-      title: "Travel Medical Insurance",
-      sections: [
-        { heading: "Eligibility", text: "Short-term visitors without NHI" },
-        { heading: "Enrollment", text: "At airport or online on arrival" },
-        { heading: "Benefits", text: "Covers illness/injuries during travel" },
-      ],
-      details: {
-        title: "Travel Medical Insurance",
-        content: [
-          {
-            heading: "Eligibility",
-            points: [
-              "Tourists and short-term visitors (e.g., C-3 visa holders).",
-              "Individuals staying in Korea for less than 6 months.",
-              "Those not eligible for NHI.",
-            ],
-          },
-          {
-            heading: "How to Join",
-            points: [
-              "Can be purchased online before or upon arrival in Korea.",
-              "Available at insurance counters at Incheon International Airport.",
-              "Various plans available from global and Korean insurers.",
-            ],
-          },
-          {
-            heading: "Benefits",
-            points: [
-              "Covers emergency medical expenses due to accidents or sudden illness during travel.",
-              "Includes costs for emergency room visits, hospitalization, and necessary treatments.",
-              "Coverage and limits vary significantly by plan, so checking policy details is crucial.",
-            ],
-          },
-        ],
-      },
-    },
-  ];
+  const insuranceText = translations?.insurance || {};
+  const cards = Object.keys(cardIconMap)
+    .map((key) => ({
+      theme: key,
+      icon: cardIconMap[key],
+      ...(insuranceText.cards?.[key] || {}),
+    }))
+    .filter((card) => !!card.title);
 
   // GSAP 애니메이션 초기화
   useEffect(() => {
@@ -709,13 +544,13 @@ const Insurance = () => {
       `}</style>
       <div className="insurance-container">
         <h1 ref={titleRef} className="main-title">
-          Medical Insurance Guide
+          {insuranceText.title || "Medical Insurance Guide"}
         </h1>
         <p ref={subtitleRef} className="main-subtitle">
-          Choose the right insurance plan for your stay in Korea
+          {insuranceText.subtitle || "Choose the right insurance plan for your stay in Korea"}
         </p>
         <div className="cards-grid">
-          {insurances.map((item, index) => {
+          {cards.map((item, index) => {
             const cardRefs = [card1Ref, card2Ref, card3Ref, card4Ref];
             return (
               <div
@@ -729,7 +564,7 @@ const Insurance = () => {
                   <h2 className="card-title">{item.title}</h2>
                 </div>
                 <div className="card-content">
-                  {item.sections.map((section, secIndex) => (
+                  {item.sections?.map((section, secIndex) => (
                     <div key={secIndex} className="info-section">
                       <h3>{section.heading}</h3>
                       <p>{section.text}</p>
@@ -745,6 +580,7 @@ const Insurance = () => {
         <DetailOverlay
           data={selectedInsurance}
           onClose={() => setSelectedInsurance(null)}
+          translations={translations}
         />
       )}
     </>
